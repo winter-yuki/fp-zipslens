@@ -38,7 +38,7 @@ data Bin' = Empty' | Zero' Bin | One' Bin
 
 -- Замените на своё определение.
 -- four = In $ Zero $ In $ Zero $ In $ One $ In Empty
-data BinF rec = Identity rec
+data BinF rec = BinF
   deriving (Eq, Show, Ord)
 
 instance Functor BinF where
@@ -67,19 +67,18 @@ int2bin = ana psiBin
 
 data Expr' = Num' Int | Add' Expr Expr | Mult' Expr Expr
 
-data ExprF rec = Num Int | Add rec rec | Mult rec rec
+-- Замените на свое определение.
+data ExprF rec = ExprF
   deriving (Eq, Show, Ord)
 
 instance Functor ExprF where
-  fmap f (Num n)    = Num n
-  fmap f (Add  l r) = Add  (f l) (f r)
-  fmap f (Mult l r) = Mult (f l) (f r)
+  fmap = undefined
 
 type Expr = Fix ExprF
 
-numCtor = Num
-addCtor = Add
-multCtor = Mult
+numCtor = undefined -- Num
+addCtor = undefined -- Add
+multCtor = undefined -- Mult
 
 -- Выражения для тестов
 en     = In . numCtor
@@ -89,17 +88,13 @@ emp357 = In (multCtor ep35 (en 7))
 em7p35 = In (multCtor (en 7) ep35)
 
 phiE :: ExprF Int -> Int
-phiE (Num n) = n
-phiE (Add  l r) = l + r
-phiE (Mult l r) = l * r
+phiE = undefined
 
 eval :: Expr -> Int
 eval = cata phiE
 
 phiEShow :: ExprF String -> String
-phiEShow (Num n)    = show n
-phiEShow (Add  l r) = concat ["(", l, "+", r, ")"]
-phiEShow (Mult l r) = concat ["(", l, "*", r, ")"]
+phiEShow = undefined
 
 showExpr :: Expr -> String
 showExpr = cata phiEShow
