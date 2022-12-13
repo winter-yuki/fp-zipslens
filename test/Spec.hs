@@ -33,12 +33,27 @@ task2Test = TestList
   [ TestCase $ assertEqual "show 3" "3" $ showExpr e3
   , TestCase $ assertEqual "show (3+5)" "(3+5)" $ showExpr ep35
   , TestCase $ assertEqual "show ((3+5)*7)" "((3+5)*7)" $ showExpr emp357
-  , TestCase $ assertEqual "eval 3" 3 $ eval e3
-  , TestCase $ assertEqual "eval (3+5)" 8 $ eval ep35
-  , TestCase $ assertEqual "eval ((3+5)*7)" 56 $ eval emp357
+  , TestCase $ assertEqual "show (7*(3+5))" "(7*(3+5))" $ showExpr em7p35
+  , TestCase $ assertEqual "eval 3" 3 $ evalExpr e3
+  , TestCase $ assertEqual "eval (3+5)" 8 $ evalExpr ep35
+  , TestCase $ assertEqual "eval ((3+5)*7)" 56 $ evalExpr emp357
+  , TestCase $ assertEqual "eval (7*(3+5))" 56 $ evalExpr em7p35
   ]
 
-task3Test = TestList []
+task3Test = TestList
+  [ TestCase $ assertEqual "compile 3" "3" $ cs e3
+  , TestCase $ assertEqual "compile (3+5)" "+ 3 5" $ cs ep35
+  , TestCase $ assertEqual "compile ((3+5)*7)" "* + 3 5 7" $ cs emp357
+  , TestCase $ assertEqual "compile (7*(3+5))" "* 7 + 3 5" $ cs em7p35
+  , TestCase $ assertEqual "evalSM 3" [3] $ ce e3
+  , TestCase $ assertEqual "evalSM (3+5)" [8] $ ce ep35
+  , TestCase $ assertEqual "evalSM ((3+5)*7)" [56] $ ce emp357
+  , TestCase $ assertEqual "evalSM (7*(3+5))" [56] $ ce em7p35
+  ]
+  where
+    cs = showByteCode . compile
+    ce = evalSM . compile
+
 task4Test = TestList []
 task5Test = TestList []
 task6Test = TestList []

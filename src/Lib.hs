@@ -3,7 +3,7 @@ module Lib where
 import Data.List (partition, uncons)
 import Data.Word (Word8)
 
--- Определение fixpoint уровня типов и морфизмы
+-- Определение fixpoint уровня типов и морфизмы.
 
 newtype Fix f = In (f (Fix f))
 
@@ -25,6 +25,22 @@ ana psi x = In $ fmap (ana psi) (psi x)
 
 hylo :: Functor f => Algebra f a -> Coalgebra f b -> (b -> a)
 hylo phi psi = cata phi . ana psi
+
+-- Пара стандартных типов из лекции.
+
+data ListF x xs = Nil | Cons x xs
+  deriving (Eq, Show, Functor)
+
+type List a = Fix (ListF a)
+
+-- | [3, 4, 5]
+listExample :: List Int
+listExample = In $ Cons 3 $ In $ Cons 4 $ In $ Cons 5 $ In Nil
+
+data NatF n = Z | S n
+  deriving (Show, Eq, Functor)
+
+type Nat = Fix NatF
 
 -- 1. Дан рекурсивный тип данных. Определите его же через Fix, объявите
 -- нерекурсивное определение функтором и реализуйте для него заданные функции.
@@ -95,18 +111,71 @@ ep35   = In (addCtor e3 (en 5))
 emp357 = In (multCtor ep35 (en 7))
 em7p35 = In (multCtor (en 7) ep35)
 
-phiE :: ExprF Int -> Int
-phiE (Num n) = n
-phiE (Add  l r) = l + r
-phiE (Mult l r) = l * r
+phiExpr :: ExprF Int -> Int
+phiExpr (Num n) = n
+phiExpr (Add  l r) = l + r
+phiExpr (Mult l r) = l * r
 
-eval :: Expr -> Int
-eval = cata phiE
+evalExpr :: Expr -> Int
+evalExpr = cata phiExpr
 
-phiEShow :: ExprF String -> String
-phiEShow (Num n)    = show n
-phiEShow (Add  l r) = concat ["(", l, "+", r, ")"]
-phiEShow (Mult l r) = concat ["(", l, "*", r, ")"]
+phiExprShow :: ExprF String -> String
+phiExprShow (Num n)    = show n
+phiExprShow (Add  l r) = concat ["(", l, "+", r, ")"]
+phiExprShow (Mult l r) = concat ["(", l, "*", r, ")"]
 
 showExpr :: Expr -> String
-showExpr = cata phiEShow
+showExpr = cata phiExprShow
+
+-- 3. В этом задании будем компилировать выражения из предыдущего
+-- задания в байткод и исполнять их на стековой машине.
+
+data Instruction = NumInstr Int | AddInstr | MultInstr
+  deriving stock (Eq)
+
+instance Show Instruction where
+  show = \case
+    NumInstr n -> show n
+    AddInstr -> "+"
+    MultInstr -> "*"
+
+type ByteCode = [Instruction]
+
+showByteCode :: ByteCode -> String
+showByteCode = unwords . map show
+
+-- У байткода есть свойство выгодно отличающее его от других кодов:
+-- конкатенация двух валидных программ в байткоде - валидная программа.
+-- Это сильно упрощает кодогенерацию и её отладку, поэтому байткод часто
+-- используют как промежуточное представление перед компиляцией в машинный код.
+-- Мы будем генерировать отдельно байткод для каждой из веток выражения, а потом
+-- его конкатенировать. Чтобы это работало эффективнее, будем использовать идиому
+-- https://wiki.haskell.org/Difference_list.
+phiComp :: Algebra ExprF (ByteCode -> ByteCode)
+phiComp = \case
+  Num n -> (NumInstr n :)
+  Add l r -> (AddInstr :) . l . r
+  Mult l r -> (MultInstr :) . l . r
+
+compile :: Expr -> ByteCode
+compile e = cata phiComp e []
+
+-- Определим стек для дальнейшей реализации стековой машины.
+
+type Stack = [Int]
+
+push :: Int -> Stack -> Stack
+push a as = a : as
+
+add :: Stack -> Stack
+add  (a : b : cs) = (b + a) : cs
+
+mult :: Stack -> Stack
+mult (a : b : cs) = (b * a) : cs
+
+-- Стековая машина исполняет байткод и возвращает конечное состояние стека.
+evalSM :: ByteCode -> Stack
+evalSM = flip foldr [] $ \case
+  NumInstr n -> push n
+  AddInstr -> add
+  MultInstr -> mult
