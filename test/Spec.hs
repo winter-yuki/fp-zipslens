@@ -29,7 +29,15 @@ task1Test = TestList
     zero = In emptyCtor
     four = In $ zeroCtor $ In $ zeroCtor $ In $ oneCtor $ In emptyCtor
 
-task2Test = TestList []
+task2Test = TestList
+  [ TestCase $ assertEqual "show 3" "3" $ showExpr e3
+  , TestCase $ assertEqual "show (3+5)" "(3+5)" $ showExpr ep35
+  , TestCase $ assertEqual "show ((3+5)*7)" "((3+5)*7)" $ showExpr emp357
+  , TestCase $ assertEqual "eval 3" 3 $ eval e3
+  , TestCase $ assertEqual "eval (3+5)" 8 $ eval ep35
+  , TestCase $ assertEqual "eval ((3+5)*7)" 56 $ eval emp357
+  ]
+
 task3Test = TestList []
 task4Test = TestList []
 task5Test = TestList []
