@@ -161,3 +161,48 @@ mult (a : b : cs) = (b * a) : cs
 -- Стековая машина исполняет байткод и возвращает конечное состояние стека.
 evalSM :: ByteCode -> Stack
 evalSM = undefined
+
+-- 4. Дано бинарное дерево. Определите для него нерекурсивный функтор
+-- и реализуйте функцию суммирования элементов.
+
+data Tree' a = Leaf' | Branch' (Tree' a) a (Tree' a)
+
+-- Замените на свое определение.
+data TreeF a rec = TreeF
+  deriving stock (Eq, Show)
+
+type Tree a = Fix (TreeF a)
+
+instance Functor (TreeF a) where
+  fmap f = undefined
+
+leafCtor = undefined -- Leaf
+branchCtor = undefined -- Branch
+
+{- Дерево для тестирования:
+     5
+    / \
+   3   6
+  / \   \
+ 2   4   7
+-}
+
+iB l x r = In $ branchCtor l x r
+iL = In leafCtor
+
+testTree = iB
+  (iB
+    (iB iL 2 iL)
+    3
+    (iB iL 4 iL))
+  5
+  (iB
+    iL
+    6
+    (iB iL 7 iL))
+
+phiTreeSum :: Algebra (TreeF Integer) Integer
+phiTreeSum = undefined
+
+treeSum :: Tree Integer -> Integer
+treeSum = cata phiTreeSum

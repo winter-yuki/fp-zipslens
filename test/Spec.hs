@@ -54,7 +54,10 @@ task3Test = TestList
     cs = showByteCode . compile
     ce = evalSM . compile
 
-task4Test = TestList []
+task4Test = TestList
+  [ TestCase $ assertEqual "sum example" 27 $ treeSum testTree
+  ]
+
 task5Test = TestList []
 task6Test = TestList []
 task7Test = TestList []
