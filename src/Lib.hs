@@ -140,10 +140,7 @@ showByteCode = unwords . map show
 -- его конкатенировать. Чтобы это работало эффективнее, будем использовать идиому
 -- https://wiki.haskell.org/Difference_list.
 phiComp :: Algebra ExprF (ByteCode -> ByteCode)
-phiComp = \case
-  Num n -> (NumInstr n :)
-  Add l r -> (AddInstr :) . l . r
-  Mult l r -> (MultInstr :) . l . r
+phiComp = undefined
 
 compile :: Expr -> ByteCode
 compile e = cata phiComp e []
@@ -163,7 +160,4 @@ mult (a : b : cs) = (b * a) : cs
 
 -- Стековая машина исполняет байткод и возвращает конечное состояние стека.
 evalSM :: ByteCode -> Stack
-evalSM = flip foldr [] $ \case
-  NumInstr n -> push n
-  AddInstr -> add
-  MultInstr -> mult
+evalSM = undefined
