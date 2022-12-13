@@ -69,3 +69,44 @@ psiBin n
 
 int2bin :: Int -> Bin
 int2bin = ana psiBin
+
+-- 2. Определите соответствующий нерекурсивный тип и заданные операции.
+
+data Expr' = Num' Int | Add' Expr Expr | Mult' Expr Expr
+
+data ExprF rec = Num Int | Add rec rec | Mult rec rec
+  deriving (Eq, Show, Ord)
+
+instance Functor ExprF where
+  fmap f (Num n)    = Num n
+  fmap f (Add  l r) = Add  (f l) (f r)
+  fmap f (Mult l r) = Mult (f l) (f r)
+
+type Expr = Fix ExprF
+
+numCtor = Num
+addCtor = Add
+multCtor = Mult
+
+-- Выражения для тестов
+en     = In . numCtor
+e3     = en 3
+ep35   = In (addCtor e3 (en 5))
+emp357 = In (multCtor ep35 (en 7))
+em7p35 = In (multCtor (en 7) ep35)
+
+phiE :: ExprF Int -> Int
+phiE (Num n) = n
+phiE (Add  l r) = l + r
+phiE (Mult l r) = l * r
+
+eval :: Expr -> Int
+eval = cata phiE
+
+phiEShow :: ExprF String -> String
+phiEShow (Num n)    = show n
+phiEShow (Add  l r) = concat ["(", l, "+", r, ")"]
+phiEShow (Mult l r) = concat ["(", l, "*", r, ")"]
+
+showExpr :: Expr -> String
+showExpr = cata phiEShow
