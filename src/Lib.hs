@@ -38,34 +38,27 @@ data Bin' = Empty' | Zero' Bin | One' Bin
 
 -- Замените на своё определение.
 -- four = In $ Zero $ In $ Zero $ In $ One $ In Empty
-data BinF rec = Empty | Zero rec | One rec
+data BinF rec = Identity rec
   deriving (Eq, Show, Ord)
 
 instance Functor BinF where
-  fmap _ Empty = Empty
-  fmap f (Zero b) = Zero (f b)
-  fmap f (One  b) = One  (f b)
+  fmap = undefined
 
 type Bin = Fix BinF
 
 -- Подставьте свои конструкторы
-emptyCtor = Empty
-zeroCtor = Zero
-oneCtor = One
+emptyCtor = undefined -- Empty
+zeroCtor = undefined -- Zero
+oneCtor = undefined -- One
 
 phiBin :: Algebra BinF Int -- BinF Int -> Int
-phiBin Empty = 0
-phiBin (Zero n) = n * 2
-phiBin (One  n) = n * 2 + 1
+phiBin = undefined
 
 bin2int :: Bin -> Int
 bin2int = cata phiBin
 
 psiBin :: Coalgebra BinF Int -- Int -> BinF Int
-psiBin 0 = Empty
-psiBin n
-  | even n    = Zero (n `div` 2)
-  | otherwise = One  (n `div` 2)
+psiBin = undefined
 
 int2bin :: Int -> Bin
 int2bin = ana psiBin
