@@ -179,3 +179,52 @@ evalSM = flip foldr [] $ \case
   NumInstr n -> push n
   AddInstr -> add
   MultInstr -> mult
+
+-- 4. Дано бинарное дерево. Определите для него нерекурсивный функтор
+-- и реализуйте функцию суммирования элементов.
+
+data Tree' a = Leaf' | Branch' (Tree' a) a (Tree' a)
+
+-- Замените на свое определение.
+data TreeF a rec = Leaf | Branch rec a rec
+  deriving stock (Eq, Show)
+
+type Tree a = Fix (TreeF a)
+
+instance Functor (TreeF a) where
+  fmap f = \case
+    Leaf -> Leaf
+    Branch l x r -> Branch (f l) x (f r)
+
+leafCtor = Leaf
+branchCtor = Branch
+
+{- Дерево для тестирования:
+     5
+    / \
+   3   6
+  / \   \
+ 2   4   7
+-}
+
+iB l x r = In $ branchCtor l x r
+iL = In leafCtor
+
+testTree = iB
+  (iB
+    (iB iL 2 iL)
+    3
+    (iB iL 4 iL))
+  5
+  (iB
+    iL
+    6
+    (iB iL 7 iL))
+
+phiTreeSum :: Algebra (TreeF Integer) Integer
+phiTreeSum = \case
+  Leaf -> 0
+  Branch l x r -> l + x + r
+
+treeSum :: Tree Integer -> Integer
+treeSum = cata phiTreeSum
