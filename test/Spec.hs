@@ -1,5 +1,6 @@
 import Test.HUnit
 import System.Environment
+import Lib
 
 main = getArgs >>= runTestTT . tests
 
@@ -18,14 +19,22 @@ tests names =
     , ("task11", task11Test)
     ]
 
-task1Test = undefined
-task2Test = undefined
-task3Test = undefined
-task4Test = undefined
-task5Test = undefined
-task6Test = undefined
-task7Test = undefined
-task8Test = undefined
-task9Test = undefined
-task10Test = undefined
-task11Test = undefined
+task1Test = TestList
+  [ TestCase $ assertEqual "to 0" 0 $ bin2int empty
+  , TestCase $ assertEqual "to 4" 4 $ bin2int four
+  , TestCase $ assertEqual "from 0" empty $ int2bin 0
+  , TestCase $ assertEqual "from 4" four $ int2bin 4
+  ]
+  where
+    four = In $ zero $ In $ zero $ In $ one $ In empty
+
+task2Test = TestList []
+task3Test = TestList []
+task4Test = TestList []
+task5Test = TestList []
+task6Test = TestList []
+task7Test = TestList []
+task8Test = TestList []
+task9Test = TestList []
+task10Test = TestList []
+task11Test = TestList []

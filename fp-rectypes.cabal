@@ -29,7 +29,7 @@ library
       Paths_fp_rectypes
   hs-source-dirs:
       src
-  ghc-options: -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -Wno-unrecognised-pragmas -XDerivingStrategies -XLambdaCase -XTupleSections -XGeneralizedNewtypeDeriving -XRankNTypes -XNoMonomorphismRestriction -XDeriveFunctor -XDeriveGeneric -XQuantifiedConstraints -XScopedTypeVariables -XFlexibleInstances -XInstanceSigs
+  ghc-options: -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -Wno-unrecognised-pragmas -XDerivingStrategies -XLambdaCase -XTupleSections -XGeneralizedNewtypeDeriving -XRankNTypes -XNoMonomorphismRestriction -XDeriveFunctor -XDeriveGeneric -XQuantifiedConstraints -XScopedTypeVariables -XFlexibleInstances -XInstanceSigs -XStandaloneDeriving -XUndecidableInstances
   build-depends:
       base >=4.7 && <5
   default-language: Haskell2010
@@ -41,7 +41,7 @@ test-suite fp-rectypes-test
       Paths_fp_rectypes
   hs-source-dirs:
       test
-  ghc-options: -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -Wno-unrecognised-pragmas -XDerivingStrategies -XLambdaCase -XTupleSections -XGeneralizedNewtypeDeriving -XRankNTypes -XNoMonomorphismRestriction -XDeriveFunctor -XDeriveGeneric -XQuantifiedConstraints -XScopedTypeVariables -XFlexibleInstances -XInstanceSigs -threaded -rtsopts -with-rtsopts=-N
+  ghc-options: -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -Wno-unrecognised-pragmas -XDerivingStrategies -XLambdaCase -XTupleSections -XGeneralizedNewtypeDeriving -XRankNTypes -XNoMonomorphismRestriction -XDeriveFunctor -XDeriveGeneric -XQuantifiedConstraints -XScopedTypeVariables -XFlexibleInstances -XInstanceSigs -XStandaloneDeriving -XUndecidableInstances -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       HUnit
     , base >=4.7 && <5

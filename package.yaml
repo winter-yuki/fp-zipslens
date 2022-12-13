@@ -42,6 +42,8 @@ ghc-options:
 - -XScopedTypeVariables
 - -XFlexibleInstances
 - -XInstanceSigs
+- -XStandaloneDeriving
+- -XUndecidableInstances
 
 library:
   source-dirs: src
