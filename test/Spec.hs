@@ -20,13 +20,14 @@ tests names =
     ]
 
 task1Test = TestList
-  [ TestCase $ assertEqual "to 0" 0 $ bin2int empty
+  [ TestCase $ assertEqual "to 0" 0 $ bin2int zero
   , TestCase $ assertEqual "to 4" 4 $ bin2int four
-  , TestCase $ assertEqual "from 0" empty $ int2bin 0
+  , TestCase $ assertEqual "from 0" zero $ int2bin 0
   , TestCase $ assertEqual "from 4" four $ int2bin 4
   ]
   where
-    four = In $ zero $ In $ zero $ In $ one $ In empty
+    zero = In emptyCtor
+    four = In $ zeroCtor $ In $ zeroCtor $ In $ oneCtor $ In emptyCtor
 
 task2Test = TestList []
 task3Test = TestList []
