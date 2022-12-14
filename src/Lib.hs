@@ -3,6 +3,7 @@ module Lib where
 import Data.List (partition, uncons)
 import Data.Word (Word8)
 
+
 -- Определение fixpoint уровня типов и морфизмы.
 
 newtype Fix f = In (f (Fix f))
@@ -33,7 +34,7 @@ data ListF x xs = Nil | Cons x xs
 
 type List a = Fix (ListF a)
 
--- | [3, 4, 5]
+-- [3, 4, 5]
 listExample :: List Int
 listExample = In $ Cons 3 $ In $ Cons 4 $ In $ Cons 5 $ In Nil
 
@@ -41,6 +42,11 @@ data NatF n = Z | S n
   deriving (Show, Eq, Functor)
 
 type Nat = Fix NatF
+
+-- 3
+natExample :: Nat
+natExample = In $ S $ In $ S $ In $ S $ In Z
+
 
 -- 1. Дан рекурсивный тип данных. Определите его же через Fix, объявите
 -- нерекурсивное определение функтором и реализуйте для него заданные функции.
@@ -86,6 +92,7 @@ psiBin n
 int2bin :: Int -> Bin
 int2bin = ana psiBin
 
+
 -- 2. Определите соответствующий нерекурсивный тип и заданные операции.
 
 data Expr' = Num' Int | Add' Expr Expr | Mult' Expr Expr
@@ -127,8 +134,67 @@ phiExprShow (Mult l r) = concat ["(", l, "*", r, ")"]
 showExpr :: Expr -> String
 showExpr = cata phiExprShow
 
--- 3. В этом задании будем компилировать выражения из предыдущего
--- задания в байткод и исполнять их на стековой машине.
+
+-- 3. Реализуйте map двумя способами.
+
+-- map как катаморфизм поданного на вход списка.
+cataMap :: (a -> b) -> List a -> List b
+cataMap f = cata $ \case
+  Nil -> In Nil
+  Cons x xs -> In $ Cons (f x) xs
+
+-- map как анаморфизм генерируемого списка.
+anaMap :: (a -> b) -> List a -> List b
+anaMap f = ana $ \case
+  In Nil -> Nil
+  In (Cons x xs) -> Cons (f x) xs
+
+
+-- 4. Катаморфизмы являются обобщением концепции свёртки списков.
+-- Напишем аналог foldr для определённого выше List.
+
+listFoldr :: (a -> b -> b) -> b -> List a -> b
+listFoldr _ ini (In Nil) = ini
+listFoldr f ini (In (Cons x xs)) = x `f` listFoldr f ini xs
+
+-- Напишите аналог listFoldr через cata.
+cataListFoldr :: (a -> b -> b) -> b -> List a -> b
+cataListFoldr f ini = cata $ \case
+  Nil -> ini
+  Cons x xs -> x `f` xs
+
+-- Напишите аналог cata для списков через foldr.
+cataList :: (ListF a b -> b) -> List a -> b
+cataList f = listFoldr g ini
+  where
+    ini = f Nil
+    g x y = f (Cons x y)
+
+
+{- 5. Анаморфизмы являются обобщением концепции развёртки списков.
+Напишем аналог unfoldr для определённого выше List. -}
+
+listUnfoldr :: (b -> Maybe (a, b)) -> b -> List a
+listUnfoldr f b = case f b of
+  Nothing -> In Nil
+  Just (a, b') -> In (Cons a (listUnfoldr f b'))
+
+{- Напишите аналог unfoldr через ana.
+Подсказка: убедитесь перед этим, что Maybe (a, b) равномощно ListF a b. -}
+
+listUnfoldr' :: (b -> Maybe (a, b)) -> b -> List a
+listUnfoldr' = undefined
+
+-- Напишите аналог ana для списков через unfoldr.
+
+anaList :: (b -> ListF a b) -> b -> List a
+anaList f = listUnfoldr g
+  where
+    g b = undefined
+
+
+-- 6. В этом задании будем компилировать выражения из второго
+-- задания в байткод и исполнять его на стековой машине.
 
 data Instruction = NumInstr Int | AddInstr | MultInstr
   deriving stock (Eq)
@@ -180,7 +246,8 @@ evalSM = flip foldr [] $ \case
   AddInstr -> add
   MultInstr -> mult
 
--- 4. Дано бинарное дерево. Определите для него нерекурсивный функтор
+
+-- 7. Дано бинарное дерево. Определите для него нерекурсивный функтор
 -- и реализуйте функцию суммирования элементов.
 
 data Tree' a = Leaf' | Branch' (Tree' a) a (Tree' a)
@@ -228,3 +295,78 @@ phiTreeSum = \case
 
 treeSum :: Tree Integer -> Integer
 treeSum = cata phiTreeSum
+
+
+-- 8.
+
+
+
+
+-- {- 9. Вспомним из лямбда-исчисления, как можно получить на единицу меньшее
+-- натуральное число, и запишем это через катаморфизмы: -}
+
+-- natPred :: Nat -> Nat
+-- natPred = snd . cata alg
+--   where
+--     alg :: NatF (Nat, Nat) -> (Nat, Nat)
+--     alg Zero = (Fix Zero, Fix Zero)
+--     alg (Suc (cur, _)) = (Fix (Suc cur), cur)
+
+-- {- Далее вспомним оттуда же комбинатор примитивной рекурсии и закодируем его: -}
+
+-- natPrimRec ::
+--   forall a.
+--   (Nat -> a -> a) ->
+--   a ->
+--   Nat ->
+--   a
+-- natPrimRec f a = snd . cata alg
+--   where
+--     alg :: NatF (Nat, a) -> (Nat, a)
+--     alg Zero = (Fix Zero, a)
+--     alg (Suc (prd, a)) = (Fix (Suc prd), f prd a)
+
+-- natPred' = natPrimRec const (Fix Zero)
+
+-- {- Выразим это для удобства чуть иначе (потом будет ясно, зачем): -}
+
+-- natPrimRec' ::
+--   forall a.
+--   (NatF (Nat, a) -> a) ->
+--   Nat ->
+--   a
+-- natPrimRec' f = snd . cata alg
+--   where
+--     alg :: NatF (Nat, a) -> (Nat, a)
+--     alg n@Zero = (Fix Zero, f n)
+--     alg n@(Suc (prd, a)) = (Fix (Suc prd), f n)
+
+-- natPred'' = natPrimRec' $ \n -> case n of
+--   Zero -> Fix Zero
+--   Suc (prd, a) -> prd
+
+-- {- Вспомним теперь, как через foldr (и просто в лямбда-исчислении) искать хвост
+-- списка: -}
+
+-- cataTail :: List a -> List a
+-- cataTail = snd . cata alg
+--   where
+--     alg :: ListF a (List a, List a) -> (List a, List a)
+--     alg Nil = (Fix Nil, Fix Nil)
+--     alg (Cons x (cur, _)) = (Fix (Cons x cur), cur)
+
+-- {- Обобщим natPrimRec до новой концепции -- параморфизма. Параморфизм работает
+-- почти так же, как катаморфизм, но позволяет на каждом шаге получать доступ не
+-- только к напопленным значениям аккумулятора, но и к самим частям стрктуры,
+-- свёртка которых привела к таким значениям.
+
+-- `natPrimRec'` выше является параморфизмом для натуральных чисел. Если вместо `f`
+-- в типе `para` подставить `NatF`, то их типы сойдутся.
+
+-- Используя `cata`, реализуйте `para` и выразите через него `tail`. -}
+
+-- para :: Functor f => (f (Fix f, a) -> a) -> Fix f -> a
+-- para f = undefined
+
+-- paraTail :: List a -> List a
+-- paraTail = undefined
