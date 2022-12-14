@@ -61,26 +61,24 @@ task5Test = TestList
       if x < 6 then Cons x (x + 1) else Nil
   ]
 
--- task3Test = TestList
---   [ TestCase $ assertEqual "compile 3" "3" $ cs e3
---   , TestCase $ assertEqual "compile (3+5)" "+ 3 5" $ cs ep35
---   , TestCase $ assertEqual "compile ((3+5)*7)" "* + 3 5 7" $ cs emp357
---   , TestCase $ assertEqual "compile (7*(3+5))" "* 7 + 3 5" $ cs em7p35
---   , TestCase $ assertEqual "evalSM 3" [3] $ ce e3
---   , TestCase $ assertEqual "evalSM (3+5)" [8] $ ce ep35
---   , TestCase $ assertEqual "evalSM ((3+5)*7)" [56] $ ce emp357
---   , TestCase $ assertEqual "evalSM (7*(3+5))" [56] $ ce em7p35
---   ]
---   where
---     cs = showByteCode . compile
---     ce = evalSM . compile
+task6Test = TestList
+  [ TestCase $ assertEqual "compile 3" "3" $ cs e3
+  , TestCase $ assertEqual "compile (3+5)" "+ 3 5" $ cs ep35
+  , TestCase $ assertEqual "compile ((3+5)*7)" "* + 3 5 7" $ cs emp357
+  , TestCase $ assertEqual "compile (7*(3+5))" "* 7 + 3 5" $ cs em7p35
+  , TestCase $ assertEqual "evalSM 3" [3] $ ce e3
+  , TestCase $ assertEqual "evalSM (3+5)" [8] $ ce ep35
+  , TestCase $ assertEqual "evalSM ((3+5)*7)" [56] $ ce emp357
+  , TestCase $ assertEqual "evalSM (7*(3+5))" [56] $ ce em7p35
+  ]
+  where
+    cs = showByteCode . compile
+    ce = evalSM . compile
 
--- task4Test = TestList
---   [ TestCase $ assertEqual "sum example" 27 $ treeSum testTree
---   ]
+task7Test = TestList
+  [ TestCase $ assertEqual "sum example" 27 $ treeSum testTree
+  ]
 
-task6Test = TestList []
-task7Test = TestList []
 task8Test = TestList []
 task9Test = TestList []
 task10Test = TestList []
