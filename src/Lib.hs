@@ -171,26 +171,28 @@ cataList f = listFoldr g ini
     g x y = f (Cons x y)
 
 
-{- 5. Анаморфизмы являются обобщением концепции развёртки списков.
-Напишем аналог unfoldr для определённого выше List. -}
+-- 5. Анаморфизмы являются обобщением концепции развёртки списков.
+-- Напишем аналог unfoldr для определённого выше List.
 
 listUnfoldr :: (b -> Maybe (a, b)) -> b -> List a
 listUnfoldr f b = case f b of
   Nothing -> In Nil
   Just (a, b') -> In (Cons a (listUnfoldr f b'))
 
-{- Напишите аналог unfoldr через ana.
-Подсказка: убедитесь перед этим, что Maybe (a, b) равномощно ListF a b. -}
-
+-- Напишите аналог unfoldr через ana.
+-- Подсказка: убедитесь перед этим, что Maybe (a, b) равномощно ListF a b.
 listUnfoldr' :: (b -> Maybe (a, b)) -> b -> List a
-listUnfoldr' = undefined
+listUnfoldr' f = ana $ \x -> case f x of
+  Nothing -> Nil
+  Just (x, y) -> Cons x y
 
 -- Напишите аналог ana для списков через unfoldr.
-
 anaList :: (b -> ListF a b) -> b -> List a
 anaList f = listUnfoldr g
   where
-    g b = undefined
+    g b = case f b of
+      Nil -> Nothing
+      Cons x y -> Just (x, y)
 
 
 -- 6. В этом задании будем компилировать выражения из второго

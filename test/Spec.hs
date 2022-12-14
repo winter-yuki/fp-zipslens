@@ -54,6 +54,13 @@ task4Test = TestList
       Cons x y -> x - y
   ]
 
+task5Test = TestList
+  [ TestCase $ assertEqual "listUnfoldr'" listExample $ flip listUnfoldr' 3 $ \x ->
+      if x < 6 then Just (x, x + 1) else Nothing
+  , TestCase $ assertEqual "anaList" listExample $ flip anaList 3 $ \x ->
+      if x < 6 then Cons x (x + 1) else Nil
+  ]
+
 -- task3Test = TestList
 --   [ TestCase $ assertEqual "compile 3" "3" $ cs e3
 --   , TestCase $ assertEqual "compile (3+5)" "+ 3 5" $ cs ep35
@@ -72,7 +79,6 @@ task4Test = TestList
 --   [ TestCase $ assertEqual "sum example" 27 $ treeSum testTree
 --   ]
 
-task5Test = TestList []
 task6Test = TestList []
 task7Test = TestList []
 task8Test = TestList []
