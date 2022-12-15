@@ -17,7 +17,6 @@ tests names =
     , ("task8", task8Test)
     , ("task9", task9Test)
     , ("task10", task10Test)
-    , ("task11", task11Test)
     ]
 
 task1Test = TestList
@@ -87,6 +86,19 @@ task8Test = TestList
   where
     xs = [5, 3, 7, 2, 6, 4]
 
-task9Test = TestList []
-task10Test = TestList []
-task11Test = TestList []
+task9Test = TestList
+  [ TestCase $ assertEqual "tail Nil" (In Nil) $ paraTail (In Nil :: List Int)
+  , TestCase $ assertEqual "tail [3, 4, 5]" l45 $ paraTail l345
+  ]
+  where
+    l45 = In $ Cons 4 $ In $ Cons 5 $ In Nil
+    l345 = In $ Cons 3 $ In $ Cons 4 $ In $ Cons 5 $ In Nil
+
+task10Test = TestList
+  [ TestCase $ assertEqual "paraLeftmost" (Just left) $ paraLeftmost testTree
+  ]
+  where
+    left = iB
+      (iB iL 2 iL)
+      3
+      (iB iL 4 iL)

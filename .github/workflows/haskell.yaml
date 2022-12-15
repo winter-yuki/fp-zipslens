@@ -17,6 +17,7 @@ jobs:
 
   tests:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     continue-on-error: true
     steps:
       - uses: actions/checkout@v3
@@ -72,7 +73,3 @@ jobs:
       - name: 'Run task10 test'
         if: ${{ always() }}
         run: N=10; stack test --ta "task$N" &> tmp$N.txt; cat tmp$N.txt | grep -E '### Error in:|### Failure in:' | wc -l | grep '0'
-
-      - name: 'Run task11 test'
-        if: ${{ always() }}
-        run: N=11; stack test --ta "task$N" &> tmp$N.txt; cat tmp$N.txt | grep -E '### Error in:|### Failure in:' | wc -l | grep '0'

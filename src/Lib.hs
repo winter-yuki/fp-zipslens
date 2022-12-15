@@ -324,83 +324,77 @@ sort :: Ord a => [a] -> [a]
 sort = hylo phiTreeInorder psiTreeBST
 
 
+-- 9. Вспомним из лямбда-исчисления, как можно получить на единицу меньшее
+-- натуральное число, и запишем это через катаморфизмы:
 
+natPred :: Nat -> Nat
+natPred = snd . cata alg
+  where
+    alg :: NatF (Nat, Nat) -> (Nat, Nat)
+    alg Z = (In Z, In Z)
+    alg (S (cur, _)) = (In (S cur), cur)
 
+-- Далее вспомним оттуда же комбинатор примитивной рекурсии и закодируем его:
 
+natPrimRec
+  :: forall a. (Nat -> a -> a)
+  -> a
+  -> Nat
+  -> a
+natPrimRec f a = snd . cata alg
+  where
+    alg :: NatF (Nat, a) -> (Nat, a)
+    alg Z = (In Z, a)
+    alg (S (prd, a)) = (In (S prd), f prd a)
 
+natPred' = natPrimRec const (In Z)
 
+-- Выразим это для удобства чуть иначе (потом будет ясно, зачем):
 
+natPrimRec'
+  :: forall a. (NatF (Nat, a) -> a)
+  -> Nat
+  -> a
+natPrimRec' f = snd . cata alg
+  where
+    alg :: NatF (Nat, a) -> (Nat, a)
+    alg n@Z = (In Z, f n)
+    alg n@(S (prd, a)) = (In (S prd), f n)
 
+natPred'' = natPrimRec' $ \case
+  Z -> In Z
+  S (prd, a) -> prd
 
+-- Вспомним теперь, как через foldr (и просто в лямбда-исчислении) искать хвост списка:
 
+cataTail :: List a -> List a
+cataTail = snd . cata alg
+  where
+    alg :: ListF a (List a, List a) -> (List a, List a)
+    alg Nil = (In Nil, In Nil)
+    alg (Cons x (cur, _)) = (In (Cons x cur), cur)
 
-
-
--- {- 9. Вспомним из лямбда-исчисления, как можно получить на единицу меньшее
--- натуральное число, и запишем это через катаморфизмы: -}
-
--- natPred :: Nat -> Nat
--- natPred = snd . cata alg
---   where
---     alg :: NatF (Nat, Nat) -> (Nat, Nat)
---     alg Zero = (Fix Zero, Fix Zero)
---     alg (Suc (cur, _)) = (Fix (Suc cur), cur)
-
--- {- Далее вспомним оттуда же комбинатор примитивной рекурсии и закодируем его: -}
-
--- natPrimRec ::
---   forall a.
---   (Nat -> a -> a) ->
---   a ->
---   Nat ->
---   a
--- natPrimRec f a = snd . cata alg
---   where
---     alg :: NatF (Nat, a) -> (Nat, a)
---     alg Zero = (Fix Zero, a)
---     alg (Suc (prd, a)) = (Fix (Suc prd), f prd a)
-
--- natPred' = natPrimRec const (Fix Zero)
-
--- {- Выразим это для удобства чуть иначе (потом будет ясно, зачем): -}
-
--- natPrimRec' ::
---   forall a.
---   (NatF (Nat, a) -> a) ->
---   Nat ->
---   a
--- natPrimRec' f = snd . cata alg
---   where
---     alg :: NatF (Nat, a) -> (Nat, a)
---     alg n@Zero = (Fix Zero, f n)
---     alg n@(Suc (prd, a)) = (Fix (Suc prd), f n)
-
--- natPred'' = natPrimRec' $ \n -> case n of
---   Zero -> Fix Zero
---   Suc (prd, a) -> prd
-
--- {- Вспомним теперь, как через foldr (и просто в лямбда-исчислении) искать хвост
--- списка: -}
-
--- cataTail :: List a -> List a
--- cataTail = snd . cata alg
---   where
---     alg :: ListF a (List a, List a) -> (List a, List a)
---     alg Nil = (Fix Nil, Fix Nil)
---     alg (Cons x (cur, _)) = (Fix (Cons x cur), cur)
-
--- {- Обобщим natPrimRec до новой концепции -- параморфизма. Параморфизм работает
+-- Обобщим natPrimRec до новой концепции -- параморфизма. Параморфизм работает
 -- почти так же, как катаморфизм, но позволяет на каждом шаге получать доступ не
--- только к напопленным значениям аккумулятора, но и к самим частям стрктуры,
+-- только к результатам свертки подструктур, но и к самим частям структуры,
 -- свёртка которых привела к таким значениям.
 
 -- `natPrimRec'` выше является параморфизмом для натуральных чисел. Если вместо `f`
 -- в типе `para` подставить `NatF`, то их типы сойдутся.
 
--- Используя `cata`, реализуйте `para` и выразите через него `tail`. -}
+-- Используя `cata`, реализуйте `para` и выразите через него `tail`.
 
--- para :: Functor f => (f (Fix f, a) -> a) -> Fix f -> a
--- para f = undefined
+para :: Functor f => (f (Fix f, a) -> a) -> Fix f -> a
+para f = snd . cata (\g -> let a = f g in (In $ fmap fst g, a))
 
--- paraTail :: List a -> List a
--- paraTail = undefined
+paraTail :: List a -> List a
+paraTail = para $ \case
+  Nil -> In Nil
+  Cons _ (t, _) -> t
+
+-- 10. Используя параморфизм, найдите левое поддерево бинарного дерева.
+
+paraLeftmost :: Tree a -> Maybe (Tree a)
+paraLeftmost = para $ \case
+  Leaf -> Nothing
+  Branch (lt, l) a (rt, r) -> Just lt
