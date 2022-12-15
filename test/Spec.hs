@@ -1,6 +1,7 @@
 import Test.HUnit
 import System.Environment
 import Lib
+import qualified Data.List as List
 
 main = getArgs >>= runTestTT . tests
 
@@ -16,7 +17,6 @@ tests names =
     , ("task8", task8Test)
     , ("task9", task9Test)
     , ("task10", task10Test)
-    , ("task11", task11Test)
     ]
 
 task1Test = TestList
@@ -41,6 +41,27 @@ task2Test = TestList
   ]
 
 task3Test = TestList
+  [ TestCase $ assertEqual "cata: (+1) <$> [3, 4, 5]" res $ cataMap (+ 1) listExample
+  , TestCase $ assertEqual "ana: (+1) <$> [3, 4, 5]" res $ anaMap (+ 1) listExample
+  ]
+  where
+    res = In $ Cons 4 $ In $ Cons 5 $ In $ Cons 6 $ In Nil
+
+task4Test = TestList
+  [ TestCase $ assertEqual "foldr (-) 0 [3, 4, 5]" 4 $ cataListFoldr (-) 0 listExample
+  , TestCase $ assertEqual "cataList a la foldr (-) 0 [3, 4, 5]" 4 $ flip cataList listExample $ \case
+      Nil -> 0
+      Cons x y -> x - y
+  ]
+
+task5Test = TestList
+  [ TestCase $ assertEqual "listUnfoldr'" listExample $ flip listUnfoldr' 3 $ \x ->
+      if x < 6 then Just (x, x + 1) else Nothing
+  , TestCase $ assertEqual "anaList" listExample $ flip anaList 3 $ \x ->
+      if x < 6 then Cons x (x + 1) else Nil
+  ]
+
+task6Test = TestList
   [ TestCase $ assertEqual "compile 3" "3" $ cs e3
   , TestCase $ assertEqual "compile (3+5)" "+ 3 5" $ cs ep35
   , TestCase $ assertEqual "compile ((3+5)*7)" "* + 3 5 7" $ cs emp357
@@ -54,14 +75,30 @@ task3Test = TestList
     cs = showByteCode . compile
     ce = evalSM . compile
 
-task4Test = TestList
+task7Test = TestList
   [ TestCase $ assertEqual "sum example" 27 $ treeSum testTree
   ]
 
-task5Test = TestList []
-task6Test = TestList []
-task7Test = TestList []
-task8Test = TestList []
-task9Test = TestList []
-task10Test = TestList []
-task11Test = TestList []
+task8Test = TestList
+  [ TestCase $ assertEqual "tree2listInorder" (List.sort xs) $ tree2listInorder testTree
+  , TestCase $ assertEqual "sort" (List.sort xs) $ sort xs
+  ]
+  where
+    xs = [5, 3, 7, 2, 6, 4]
+
+task9Test = TestList
+  [ TestCase $ assertEqual "tail Nil" (In Nil) $ paraTail (In Nil :: List Int)
+  , TestCase $ assertEqual "tail [3, 4, 5]" l45 $ paraTail l345
+  ]
+  where
+    l45 = In $ Cons 4 $ In $ Cons 5 $ In Nil
+    l345 = In $ Cons 3 $ In $ Cons 4 $ In $ Cons 5 $ In Nil
+
+task10Test = TestList
+  [ TestCase $ assertEqual "paraLeftmost" (Just left) $ paraLeftmost testTree
+  ]
+  where
+    left = iB
+      (iB iL 2 iL)
+      3
+      (iB iL 4 iL)
