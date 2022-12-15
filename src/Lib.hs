@@ -127,15 +127,11 @@ showExpr = cata phiExprShow
 
 -- map как катаморфизм поданного на вход списка.
 cataMap :: (a -> b) -> List a -> List b
-cataMap f = cata $ \case
-  Nil -> In Nil
-  Cons x xs -> In $ Cons (f x) xs
+cataMap f = cata undefined
 
 -- map как анаморфизм генерируемого списка.
 anaMap :: (a -> b) -> List a -> List b
-anaMap f = ana $ \case
-  In Nil -> Nil
-  In (Cons x xs) -> Cons (f x) xs
+anaMap f = ana undefined
 
 
 -- 4. Катаморфизмы являются обобщением концепции свёртки списков.
@@ -147,16 +143,14 @@ listFoldr f ini (In (Cons x xs)) = x `f` listFoldr f ini xs
 
 -- Напишите аналог listFoldr через cata.
 cataListFoldr :: (a -> b -> b) -> b -> List a -> b
-cataListFoldr f ini = cata $ \case
-  Nil -> ini
-  Cons x xs -> x `f` xs
+cataListFoldr f ini = cata undefined
 
 -- Напишите аналог cata для списков через foldr.
 cataList :: (ListF a b -> b) -> List a -> b
 cataList f = listFoldr g ini
   where
-    ini = f Nil
-    g x y = f (Cons x y)
+    ini = undefined
+    g x y = undefined
 
 
 -- 5. Анаморфизмы являются обобщением концепции развёртки списков.
@@ -170,17 +164,13 @@ listUnfoldr f b = case f b of
 -- Напишите аналог unfoldr через ana.
 -- Подсказка: убедитесь перед этим, что Maybe (a, b) равномощно ListF a b.
 listUnfoldr' :: (b -> Maybe (a, b)) -> b -> List a
-listUnfoldr' f = ana $ \x -> case f x of
-  Nothing -> Nil
-  Just (x, y) -> Cons x y
+listUnfoldr' f = ana undefined
 
 -- Напишите аналог ana для списков через unfoldr.
 anaList :: (b -> ListF a b) -> b -> List a
 anaList f = listUnfoldr g
   where
-    g b = case f b of
-      Nil -> Nothing
-      Cons x y -> Just (x, y)
+    g b = undefined
 
 
 -- 6. В этом задании будем компилировать выражения из второго задания
@@ -285,15 +275,13 @@ treeSum = cata phiTreeSum
 -- который выражает идею трансформации вещей через удобное промежуточное представление.
 
 phiTreeInorder :: Algebra (TreeF a) [a] -- T a [a] -> [a]
-phiTreeInorder Leaf = []
-phiTreeInorder (Branch l x r) = l <> [x] <> r
+phiTreeInorder = undefined
 
 tree2listInorder :: Tree a -> [a]
 tree2listInorder = cata phiTreeInorder
 
 psiTreeBST :: Ord a => Coalgebra (TreeF a) [a] -- [a] -> T a [a]
-psiTreeBST [] = Leaf
-psiTreeBST (x:xs) = let (l, r) = partition (< x) xs in Branch l x r
+psiTreeBST = undefined
 
 list2BST :: Ord a => [a] -> Tree a
 list2BST = ana psiTreeBST
@@ -363,16 +351,12 @@ cataTail = snd . cata alg
 -- Используя `cata`, реализуйте `para` и выразите через него `tail`.
 
 para :: Functor f => (f (Fix f, a) -> a) -> Fix f -> a
-para f = snd . cata (\g -> let a = f g in (In $ fmap fst g, a))
+para f = undefined
 
 paraTail :: List a -> List a
-paraTail = para $ \case
-  Nil -> In Nil
-  Cons _ (t, _) -> t
+paraTail = para undefined
 
 -- 10. Используя параморфизм, найдите левое поддерево бинарного дерева.
 
 paraLeftmost :: Tree a -> Maybe (Tree a)
-paraLeftmost = para $ \case
-  Leaf -> Nothing
-  Branch (lt, l) a (rt, r) -> Just lt
+paraLeftmost = para undefined
