@@ -299,7 +299,39 @@ treeSum :: Tree Integer -> Integer
 treeSum = cata phiTreeSum
 
 
--- 8.
+-- 8. Воспользуемся деревом из предыдущего задания как удобным промежуточным
+-- представлением и реализуем сортировку списка. Сначала список будет разворачиваться
+-- в бинарное дерево поиска с помощью анаморфизма. Потом -- дерево будет сворачиваться
+-- обратно в список с помощью катаморфизма алгеброй, реализующей in-order обход.
+-- Таким образом, решение -- композиция анаморфизма с катаморфизмом -- гилеморфизм,
+-- который выражает идею трансформации вещей через удобное промежуточное представление.
+
+phiTreeInorder :: Algebra (TreeF a) [a] -- T a [a] -> [a]
+phiTreeInorder Leaf = []
+phiTreeInorder (Branch l x r) = l <> [x] <> r
+
+tree2listInorder :: Tree a -> [a]
+tree2listInorder = cata phiTreeInorder
+
+psiTreeBST :: Ord a => Coalgebra (TreeF a) [a] -- [a] -> T a [a]
+psiTreeBST [] = Leaf
+psiTreeBST (x:xs) = let (l, r) = partition (< x) xs in Branch l x r
+
+list2BST :: Ord a => [a] -> Tree a
+list2BST = ana psiTreeBST
+
+sort :: Ord a => [a] -> [a]
+sort = hylo phiTreeInorder psiTreeBST
+
+
+
+
+
+
+
+
+
+
 
 
 

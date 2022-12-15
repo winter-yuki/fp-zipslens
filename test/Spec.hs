@@ -1,6 +1,7 @@
 import Test.HUnit
 import System.Environment
 import Lib
+import qualified Data.List as List
 
 main = getArgs >>= runTestTT . tests
 
@@ -79,7 +80,13 @@ task7Test = TestList
   [ TestCase $ assertEqual "sum example" 27 $ treeSum testTree
   ]
 
-task8Test = TestList []
+task8Test = TestList
+  [ TestCase $ assertEqual "tree2listInorder" (List.sort xs) $ tree2listInorder testTree
+  , TestCase $ assertEqual "sort" (List.sort xs) $ sort xs
+  ]
+  where
+    xs = [5, 3, 7, 2, 6, 4]
+
 task9Test = TestList []
 task10Test = TestList []
 task11Test = TestList []
