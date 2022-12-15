@@ -356,6 +356,7 @@ para f = undefined
 paraTail :: List a -> List a
 paraTail = para undefined
 
+
 -- 10. Используя параморфизм, найдите левое поддерево бинарного дерева.
 
 paraLeftmost :: Tree a -> Maybe (Tree a)
