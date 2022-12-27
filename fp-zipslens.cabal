@@ -4,11 +4,11 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 
-name:           fp-rectypes
+name:           fp-zipslens
 version:        0.1.0.0
-description:    Please see the README on GitHub at <https://github.com/githubuser/fp-rectypes#readme>
-homepage:       https://github.com/githubuser/fp-rectypes#readme
-bug-reports:    https://github.com/githubuser/fp-rectypes/issues
+description:    Please see the README on GitHub at <https://github.com/githubuser/fp-zipslens#readme>
+homepage:       https://github.com/githubuser/fp-zipslens#readme
+bug-reports:    https://github.com/githubuser/fp-zipslens/issues
 author:         Author name here
 maintainer:     example@example.com
 copyright:      2022 Author name here
@@ -20,13 +20,13 @@ extra-source-files:
 
 source-repository head
   type: git
-  location: https://github.com/githubuser/fp-rectypes
+  location: https://github.com/githubuser/fp-zipslens
 
 library
   exposed-modules:
       Lib
   other-modules:
-      Paths_fp_rectypes
+      Paths_fp_zipslens
   hs-source-dirs:
       src
   ghc-options: -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -Wno-unrecognised-pragmas -XDerivingStrategies -XLambdaCase -XTupleSections -XGeneralizedNewtypeDeriving -XRankNTypes -XNoMonomorphismRestriction -XDeriveFunctor -XDeriveGeneric -XQuantifiedConstraints -XScopedTypeVariables -XFlexibleInstances -XInstanceSigs -XStandaloneDeriving -XUndecidableInstances
@@ -34,16 +34,16 @@ library
       base >=4.7 && <5
   default-language: Haskell2010
 
-test-suite fp-rectypes-test
+test-suite fp-zipslens-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
-      Paths_fp_rectypes
+      Paths_fp_zipslens
   hs-source-dirs:
       test
   ghc-options: -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -Wno-unrecognised-pragmas -XDerivingStrategies -XLambdaCase -XTupleSections -XGeneralizedNewtypeDeriving -XRankNTypes -XNoMonomorphismRestriction -XDeriveFunctor -XDeriveGeneric -XQuantifiedConstraints -XScopedTypeVariables -XFlexibleInstances -XInstanceSigs -XStandaloneDeriving -XUndecidableInstances -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       HUnit
     , base >=4.7 && <5
-    , fp-rectypes
+    , fp-zipslens
   default-language: Haskell2010

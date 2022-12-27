@@ -1,6 +1,6 @@
-name:                fp-rectypes
+name:                fp-zipslens
 version:             0.1.0.0
-github:              "githubuser/fp-rectypes"
+github:              "githubuser/fp-zipslens"
 license:             BSD3
 author:              "Author name here"
 maintainer:          "example@example.com"
@@ -16,7 +16,7 @@ extra-source-files:
 # To avoid duplicated efforts in documentation and dealing with the
 # complications of embedding Haddock markup inside cabal files, it is
 # common to point users to the README.md file.
-description:         Please see the README on GitHub at <https://github.com/githubuser/fp-rectypes#readme>
+description:         Please see the README on GitHub at <https://github.com/githubuser/fp-zipslens#readme>
 
 dependencies:
 - base >= 4.7 && < 5
@@ -49,7 +49,7 @@ library:
   source-dirs: src
 
 tests:
-  fp-rectypes-test:
+  fp-zipslens-test:
     main:                Spec.hs
     source-dirs:         test
     ghc-options:
@@ -57,5 +57,5 @@ tests:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - fp-rectypes
+    - fp-zipslens
     - HUnit
